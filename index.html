@@ -2,47 +2,106 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Video Master Hub PRO</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         :root { --bg-color: #1a1a1a; --card-bg: #8d8d8d; --text-color: #000; --btn-active: #b20000; --btn-off: #4d4d4d; }
-        body { background-color: var(--bg-color); background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 250px 20px; margin: 0; color: white; }
-        .container { max-width: 700px; width: 100%; }
-        h1 { font-size: 42px; font-weight: 800; text-transform: uppercase; margin: 0; }
-        .sub-h1 { font-size: 14px; color: var(--btn-active); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; }
-        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
-        .mode-btn { background: #333; border: none; color: white; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            background-image: radial-gradient(#333 1px, transparent 1px); 
+            background-size: 20px 20px; 
+            font-family: 'Inter', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px 0 280px 0; /* Увеличил отступ снизу под плашку */
+            margin: 0; 
+            color: white; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { width: 100%; max-width: 700px; padding: 0 10px; box-sizing: border-box; }
+        
+        h1 { font-size: 38px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 10px; }
+        .sub-h1 { font-size: 12px; color: var(--btn-active); letter-spacing: 3px; text-transform: uppercase; margin: 0 0 20px 10px; font-weight: 600; }
+
+        .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; padding: 0 10px; }
+        .mode-btn { flex: 1; background: #333; border: none; color: white; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.2s; }
         .mode-btn.active { background: var(--btn-active); }
-        input#proj-name { width: 100%; background: #222; border: 2px solid #444; border-radius: 15px; padding: 15px; color: white; font-family: 'Inter'; font-size: 16px; margin-bottom: 25px; box-sizing: border-box; }
-        .card { background-color: var(--card-bg); border-radius: 35px; padding: 25px 35px; margin-bottom: 15px; color: var(--text-color); }
-        .card h2 { font-size: 22px; font-weight: 600; margin: 0 0 15px 0; }
-        .check-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer; }
-        .checkbox { width: 26px; height: 26px; background-color: var(--btn-off); border-radius: 7px; flex-shrink: 0; transition: 0.2s; }
-        .check-item.active .checkbox { background-color: var(--btn-active); box-shadow: 0 0 8px rgba(178, 0, 0, 0.4); }
-        .check-item span { font-size: 14px; font-weight: 400; line-height: 1.3; }
-        #result-card { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 700px; background-color: #141414; border: 3px solid var(--btn-active); border-radius: 35px; padding: 25px 35px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); z-index: 1000; }
-        .score-row { display: flex; align-items: baseline; gap: 15px; }
-        .total-score { font-size: 54px; font-weight: 800; color: white; line-height: 1; }
-        .grade-name { font-size: 26px; color: var(--btn-active); font-weight: 800; text-transform: uppercase; }
-        .btns-row { display: flex; gap: 10px; margin-top: 15px; }
-        .save-btn { flex: 1; background: var(--btn-active); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
-        .save-btn:active { transform: scale(0.98); }
-        .history-section { width: 100%; margin-top: 50px; border-top: 1px solid #333; padding-top: 30px; }
-        .hist-item { background: #222; padding: 15px 25px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--btn-active); }
-        .hist-info b { display: block; font-size: 16px; }
-        .hist-info small { opacity: 0.5; text-transform: uppercase; font-size: 10px; }
+
+        .input-wrap { padding: 0 10px; width: 100%; box-sizing: border-box; }
+        input#proj-name { 
+            width: 100%; background: #222; border: 2px solid #444; border-radius: 12px; 
+            padding: 18px; color: white; font-family: 'Inter'; font-size: 16px; 
+            margin-bottom: 20px; box-sizing: border-box; outline: none;
+        }
+
+        .card { 
+            background-color: var(--card-bg); border-radius: 0px; /* На мобилках во всю ширину */
+            padding: 25px 20px; margin-bottom: 15px; color: var(--text-color); 
+            width: 100%; box-sizing: border-box; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 { font-size: 20px; font-weight: 800; margin: 0 0 18px 0; line-height: 1.2; text-transform: uppercase; border-bottom: 2px solid rgba(0,0,0,0.1); padding-bottom: 10px; }
+
+        .check-item { 
+            display: flex; align-items: flex-start; gap: 15px; 
+            margin-bottom: 20px; cursor: pointer; padding: 5px 0;
+        }
+        
+        .checkbox { 
+            width: 28px; height: 28px; background-color: var(--btn-off); 
+            border-radius: 8px; flex-shrink: 0; margin-top: 2px; transition: 0.2s; 
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .check-item.active .checkbox { background-color: var(--btn-active); box-shadow: 0 0 12px rgba(178, 0, 0, 0.5); border-color: transparent; }
+        .check-item span { font-size: 16px; font-weight: 500; line-height: 1.4; word-wrap: break-word; }
+
+        #result-card { 
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background-color: #141414; border-top: 4px solid var(--btn-active); 
+            padding: 20px 20px 30px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.9); z-index: 1000;
+        }
+        
+        .score-row { display: flex; align-items: baseline; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .total-score { font-size: 50px; font-weight: 800; color: white; line-height: 1; }
+        .grade-name { font-size: 24px; color: var(--btn-active); font-weight: 800; text-transform: uppercase; }
+
+        .btns-row { display: flex; gap: 12px; max-width: 700px; margin: 0 auto; }
+        .save-btn { flex: 1; background: var(--btn-active); color: white; border: none; padding: 20px; border-radius: 15px; font-weight: 800; text-transform: uppercase; cursor: pointer; font-size: 14px; letter-spacing: 1px; }
+
+        .history-section { width: 100%; margin-top: 40px; border-top: 1px solid #333; padding: 20px 10px; box-sizing: border-box; }
+        .hist-item { background: #222; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--btn-active); }
+        .hist-info b { display: block; font-size: 16px; color: #fff; margin-bottom: 4px; }
+        .hist-info small { opacity: 0.5; text-transform: uppercase; font-size: 11px; display: block; }
+
+        /* Адаптив для десктопа и больших экранов */
+        @media (min-width: 600px) {
+            body { padding: 40px 20px 280px 20px; }
+            .card { border-radius: 30px; }
+            .container { padding: 0; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>CHECK LIST</h1>
         <div class="sub-h1" id="mode-label">Creative Production Standards</div>
+        
         <div class="mode-selector">
             <button id="btn-spine" class="mode-btn active" onclick="setMode('spine')">SPINE</button>
             <button id="btn-casc" class="mode-btn" onclick="setMode('casc')">CASCADEUR</button>
         </div>
-        <input type="text" id="proj-name" placeholder="Название ролика / проекта...">
+
+        <div class="input-wrap">
+            <input type="text" id="proj-name" placeholder="Название ролика / проекта...">
+        </div>
+
         <div id="app"></div>
+
         <div id="result-card">
             <div class="score-row">
                 <div class="total-score" id="score">0.0</div>
@@ -50,9 +109,10 @@
             </div>
             <div class="btns-row">
                 <button id="main-save-btn" class="save-btn" onclick="saveToCloud()">Сохранить</button>
-                <button class="save-btn" style="background: #444;" onclick="shareResult()">Поделиться</button>
+                <button class="save-btn" style="background: #333;" onclick="shareResult()">Поделиться</button>
             </div>
         </div>
+
         <div class="history-section" id="history-list"></div>
     </div>
 
@@ -60,41 +120,26 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhLasiDpLR6HIGxyO43MMpzNlBj5Hp5HxuIDe0umE9WUNuotymcYc_SRlfE2ylSEv7Tw/exec";
 
         const spineQ = [
-            { t: "1. Хук – Визуал", w: 1, q: ["Резкий цветовой/композиционный контраст в первые 0.5 сек?", "Хочется пересмотрет/паузить, чтобы рассмотреть детали?", "Картинка выглядит дороже среднего ролика в ленте?"]},
-            { t: "2. Хук – Триггер", w: 1, q: ["Вызывает моментальную эмоцию (смех/шок/узнавание) и лайк?", "Захочется переслать другу со словами «чел,ты видел»?", "Есть ли ценность, ради которой стоит «сохранить»?"]},
-            { t: "3. Хук – Музыка", w: 1, q: ["Действия синхронны с ритмом, дополняют вайб и усиливают картинку?", "Использован трендовый звук?", "Использованы SFX?"]},
-            { t: "4. Хук – Интрига", w: 1, q: ["Есть вопрос в тексте/визуале, ответ на который только в конце??", "Заставил ли ты зрителя почувствовать «недосказанность»?", "Есть желание досмотреть видео до последней секунды?"]},
-            { t: "5. Основа – Динамика", w: 1, q: ["Смена «Eye Candy» на середине ролика - нет пустых кадров?", "Удерживается высокий темп монтажа?", "Используются Speed up и Slow-mo для сочности ролика или шейпов?"]},
-            { t: "7. Основа – Техничка", w: 0.5, q: ["Находятся ли текст и важные элементы внутри Safe Zone?", "Одобренный цвето-текст дизайнером?", "Звук чистый, без перегрузов и шумов?"]},
-            { t: "8. Основа – Без звука", w: 1, q: ["Понятен основной сюжет/посыл видео вообще без включения звука?", "Достаточно ли в видео визуальных подсказок или субтитров?", "Визуал как самостоятельный нарратив?"]},
-            { t: "9. Последыш – CTA", w: 0.5, q: ["Есть ли в конце четкий байт на действие (подпишись/коммент)?", "Выглядит ли превью ролика кликабельно и интригующе?", "Оставляет ли финал чувство завершенности или желание увидеть ч.2?"]}
+            { t: "1. Хук – Визуал", w: 1, q: ["Резкий цветовой или композиционный контраст в первые 0.5 сек?", "Хочется пересмотреть или поставить на паузу, чтобы понять технику или насладиться?", "Картинка выглядит дороже или необычнее среднего ролика в ленте?"]},
+            { t: "2. Хук – Триггер", w: 1, q: ["Вызывает моментальную эмоцию (смех/шок/узнавание) и желание поставить лайк?", "Захочется переслать другу со словами «жиза» или «смотри как круто»?", "Есть ли в видео реальная ценность, ради которой его стоит «сохранить»?"]},
+            { t: "3. Хук – Музыка", w: 1, q: ["Действия в кадре синхронны с ритмом, дополняют вайб и усиливают картинку?", "Использован ли трендовый звук или музыка, которая сейчас на слуху?", "Использованы ли дополнительные SFX для усиления акцентов?"]},
+            { t: "4. Хук – Интрига", w: 1, q: ["Есть ли вопрос в тексте или визуале, ответ на который зритель получит только в конце?", "Заставил ли ты зрителя почувствовать «недосказанность» в начале?", "Есть ли желание досмотреть видео до самой последней секунды?"]},
+            { t: "5. Основа – Динамика", w: 1, q: ["Происходит ли смена «Eye Candy» на середине ролика, нет ли пустых кадров?", "Удерживается ли высокий темп монтажа на протяжении всего видео?", "Используются ли Speed up и Slow-mo для придания сочности ролику или шейпам?"]},
+            { t: "7. Основа – Техничка", w: 0.5, q: ["Находятся ли текст и важные элементы внутри Safe Zone соцсетей?", "Использован ли одобренный цвето-текст нашим дизайнером?", "Звук чистый, без перегрузов и посторонних шумов?"]},
+            { t: "8. Основа – Без звука", w: 1, q: ["Понятен ли основной сюжет или посыл видео вообще без включения звука?", "Достаточно ли в видео визуальных подсказок или субтитров?", "Работает ли визуал как самостоятельный нарратив?"]},
+            { t: "9. Последыш – CTA", w: 0.5, q: ["Есть ли в конце четкий байт на действие (подпишись / напиши коммент)?", "Выглядит ли превью ролика кликабельно и интригующе?", "Оставляет ли финал чувство завершенности или острое желание увидеть ч.2?"]}
         ];
 
         const cascQ = [
-            { t: "1. Хук – Визуал (Фича)", w: 1, q: ["Понятна ли главная фича ролика в первые 3 сек?",
-                                                     "Есть ли наглядный контраст «До / После» или работа инструментов (траектории)?",
-                                                     "Интерфейс и персонаж выглядят чисто, без лишнего визуального мусора?"]},
-            { t: "2. Хук – Триггер", w: 1, q: ["Решает ли видео конкретную «боль» (фикс ног, баланс, мокап)?",
-                                               "Захочется ли сохранить ролик как мини-гайд или референс?",
-                                               "Вызывает ли результат мысль: «Я могу сделать так же быстро»?"]},
-            { t: "3. Хук – Понятность", w: 1, q: ["Суть фичи понятна полностью БЕЗ включения звука?",
-                                                  "Озвучка (если есть) лишь дополняет визуал, а не является единственным источником инфы?"]},
-            { t: "4. Хук – Интрига", w: 1, q: ["Есть ли в начале заголовок/вопрос, на который ролик дает ответ?",
-                                               "Понятно ли сразу, какой профит получит зритель в конце?",
-                                               "Создано ли ощущение «магии» (сложное действие за пару кликов)?"]},
-            { t: "5. Основа – Динамика", w: 1, q: ["Ролик сосредоточен на 1–3 фичах без распыления внимания?",
-                                                   "Нет затянутых моментов в записи экрана (склейки на рутине)?",
-                                                   "Есть акцент на «вкусных» деталях физики (вес, инерция)?"]},
-            { t: "6. Основа – Понятность", w: 1, q: ["Читаются ли действия в программе (курсор, кнопки, позы)?",
-                                                     "Видна ли разница в качестве анимации благодаря Cascadeur?",
-                                                     "Успевает ли зритель осознать, что именно произошло в софте?"]},
-            { t: "7. Основа – Техничка", w: 0.5, q: [ "Текст и элементы UI не перекрыты интерфейсом соцсетей?",
-                                                     "Качество записи высокое (текст кнопок читается)?"]},
-            { t: "8. Основа – Инфографика", w: 1, q: [ "Использованы стрелки/выделения для направления взгляда?",
-                                                      "Можно ли обучиться этому «мини-тутору» просто глядя на экран?"]},
-            { t: "9. Последыш – CTA", w: 0.5, q: ["Есть четкий призыв (Скачать / Попробовать / Стрим)?",
-                                                  "Есть ссылка или указание, где найти инструмент?",
-                                                  "Финал вызывает желание открыть Cascadeur прямо сейчас?"]}
+            { t: "1. Хук – Визуал (Польза/Фича)", w: 1, q: ["Понятна ли главная фича ролика в первые 3 секунды?", "Есть ли наглядный контраст «До / После» или работа инструментов (траектории)?", "Интерфейс и персонаж выглядят чисто, без лишнего визуального мусора?"]},
+            { t: "2. Хук – Триггер (Желание)", w: 1, q: ["Решает ли видео конкретную «боль» (фикс ног, баланс, работа с мокапом)?", "Захочется ли сохранить ролик как мини-гайд или крутой референс?", "Вызывает ли результат мысль: «Я могу сделать так же быстро в этой программе»?"]},
+            { t: "3. Хук – Понятность (Без звука)", w: 1, q: ["Суть фичи или туториала понятна полностью БЕЗ включения звука?", "Озвучка (если она есть) лишь дополняет визуал, а не является единственным источником инфы?"]},
+            { t: "4. Хук – Интрига (Результат)", w: 1, q: ["Есть ли в начале заголовок-вопрос, на который ролик дает ответ?", "Понятно ли сразу, какой профит получит зритель в конце просмотра?", "Создано ли ощущение «магии» (сложное действие за пару кликов)?"]},
+            { t: "5. Основа – Динамика (Наглядность)", w: 1, q: ["Ролик сосредоточен на 1–3 фичах без распыления внимания на всё сразу?", "Нет ли затянутых моментов в записи экрана (склейки на рутине)?", "Есть ли акцент на «вкусных» деталях физики (вес, инерция, вторички)?"]},
+            { t: "6. Основа – Понятность контента", w: 1, q: ["Читаются ли действия в программе (курсор, нажатия кнопок, изменения позы)?", "Видна ли разница в качестве анимации благодаря инструментам Cascadeur?", "Успевает ли зритель осознать, что именно произошло в софте?"]},
+            { t: "7. Основа – Техничка", w: 0.5, q: ["Текст и важные элементы UI не перекрыты интерфейсом соцсетей?", "Качество записи экрана высокое (текст кнопок читается)?"]},
+            { t: "8. Основа – Инфографика", w: 1, q: ["Использованы ли дополнительные стрелки или выделения для направления взгляда?", "Можно ли обучиться этому «мини-тутору» просто глядя на экран?"]},
+            { t: "9. Последыш – CTA (Призыв)", w: 0.5, q: ["Есть ли четкий призыв к действию (Скачать / Попробовать / Прийти на стрим)?", "Есть ли ссылка или четкое указание, где найти инструмент?", "Вызывает ли финал желание открыть Cascadeur прямо сейчас?"]}
         ];
 
         let currentMode = 'spine', state = [];
@@ -103,6 +148,7 @@
             currentMode = mode;
             document.getElementById('btn-spine').classList.toggle('active', mode === 'spine');
             document.getElementById('btn-casc').classList.toggle('active', mode === 'casc');
+            document.getElementById('mode-label').innerText = mode === 'spine' ? "Spine Video Standards" : "Software Promotion Standards";
             const data = mode === 'spine' ? spineQ : cascQ;
             state = savedState || data.map(cat => cat.q.map(() => false));
             render();
@@ -113,7 +159,10 @@
             const app = document.getElementById('app'); app.innerHTML = '';
             data.forEach((cat, cIdx) => {
                 const card = document.createElement('div'); card.className = 'card';
-                let qHtml = cat.q.map((q, qIdx) => `<div class="check-item ${state[cIdx][qIdx]?'active':''}" onclick="toggle(${cIdx},${qIdx},this)"><div class="checkbox"></div><span>${q}</span></div>`).join('');
+                let qHtml = cat.q.map((q, qIdx) => `
+                    <div class="check-item ${state[cIdx][qIdx]?'active':''}" onclick="toggle(${cIdx},${qIdx},this)">
+                        <div class="checkbox"></div><span>${q}</span>
+                    </div>`).join('');
                 card.innerHTML = `<h2>${cat.t}</h2>${qHtml}`;
                 app.appendChild(card);
             });
@@ -131,22 +180,22 @@
         }
 
         async function saveToCloud() {
-            const btn = document.getElementById('main-save-btn'); btn.innerText = "СОХРАНЯЕМ...";
+            const btn = document.getElementById('main-save-btn'); btn.innerText = "...";
             const data = { name: document.getElementById('proj-name').value || "Project", score: document.getElementById('score').innerText, grade: document.getElementById('grade').innerText, type: currentMode, fullState: state };
             try {
                 await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
-                btn.innerText = "УСПЕШНО!"; setTimeout(() => { btn.innerText = "СОХРАНИТЬ"; }, 2000);
-                setTimeout(loadHistory, 1500);
-            } catch (e) { btn.innerText = "ОШИБКА"; }
+                btn.innerText = "OK"; setTimeout(() => { btn.innerText = "Сохранить"; }, 2000);
+                setTimeout(loadHistory, 1000);
+            } catch (e) { btn.innerText = "ERR"; }
         }
 
         async function loadHistory() {
             try {
                 const res = await fetch(SCRIPT_URL); const log = await res.json();
-                const list = document.getElementById('history-list'); list.innerHTML = '<h2>АРХИВ (ОБЛАКО)</h2>';
-                log.reverse().forEach(item => {
+                const list = document.getElementById('history-list'); list.innerHTML = '<h2 style="font-size:12px;opacity:0.5;margin-bottom:15px;margin-left:10px;">ОБЩИЙ АРХИВ</h2>';
+                log.reverse().slice(0, 20).forEach(item => {
                     const div = document.createElement('div'); div.className = 'hist-item';
-                    div.innerHTML = `<div class="hist-info"><b>${item.name}</b><small>${item.type} • ${item.score} PTS</small></div><span style="color:#4a9eff;cursor:pointer;font-size:12px;font-weight:800;" onclick='restore(${JSON.stringify(item.fullState)},"${item.type}","${item.name}")'>ОТКРЫТЬ</span>`;
+                    div.innerHTML = `<div class="hist-info"><b>${item.name}</b><small>${item.type.toUpperCase()} • ${item.score} PTS</small></div><span style="color:#4a9eff;font-size:12px;font-weight:800;" onclick='restore(${JSON.stringify(item.fullState)},"${item.type}","${item.name}")'>ОТКРЫТЬ</span>`;
                     list.appendChild(div);
                 });
             } catch (e) {}
@@ -163,8 +212,10 @@
         window.onload = () => {
             const p = new URLSearchParams(window.location.search);
             if(p.get('data')) {
-                const d = JSON.parse(decodeURIComponent(escape(atob(p.get('data')))));
-                document.getElementById('proj-name').value = d.n; setMode(d.m, d.s);
+                try {
+                    const d = JSON.parse(decodeURIComponent(escape(atob(p.get('data')))));
+                    document.getElementById('proj-name').value = d.n; setMode(d.m, d.s);
+                } catch(e) { setMode('spine'); }
             } else { setMode('spine'); }
             loadHistory();
         };
