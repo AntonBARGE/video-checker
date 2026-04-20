@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Master Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #8d8d8d;
+            --text-color: #000000;
+            --btn-active: #b20000;
+            --btn-off: #4d4d4d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 250px 20px;
+            margin: 0;
+            color: white;
+        }
+
+        .container { max-width: 700px; width: 100%; }
+
+        h1 { font-size: 42px; font-weight: 800; text-transform: uppercase; margin: 0; text-align: left; }
+        .sub-h1 { font-size: 14px; color: var(--btn-active); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px; font-weight: 600; }
+
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
+        .mode-btn {
+            background: #333; border: none; color: white; padding: 12px 20px; 
+            border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.2s;
+        }
+        .mode-btn.active { background: var(--btn-active); }
+
+        input#proj-name {
+            width: 100%; background: #222; border: 2px solid #444; border-radius: 15px;
+            padding: 15px; color: white; font-family: 'Inter'; font-size: 16px; margin-bottom: 25px; box-sizing: border-box;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 35px;
+            padding: 25px 35px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .card h2 { font-size: 22px; font-weight: 600; margin: 0 0 15px 0; text-align: left; }
+
+        .check-item {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer;
+        }
+
+        .checkbox {
+            width: 26px; height: 26px; background-color: var(--btn-off);
+            border-radius: 7px; flex-shrink: 0; transition: 0.2s;
+        }
+
+        .check-item.active .checkbox {
+            background-color: var(--btn-active);
+            box-shadow: 0 0 8px rgba(178, 0, 0, 0.4);
+        }
+
+        .check-item span { font-size: 14px; font-weight: 400; line-height: 1.3; text-align: left; }
+
+        /* Липкая панель результата */
+        #result-card {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 700px; background-color: #141414;
+            border: 3px solid var(--btn-active); border-radius: 35px; padding: 25px 35px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8); z-index: 1000;
+        }
+
+        .score-row { display: flex; align-items: baseline; gap: 15px; }
+        .total-score { font-size: 54px; font-weight: 800; color: white; line-height: 1; }
+        .grade-name { font-size: 26px; color: var(--btn-active); font-weight: 800; text-transform: uppercase; }
+        
+        .save-btn {
+            margin-top: 15px; background: var(--btn-active); color: white; border: none;
+            padding: 15px; border-radius: 15px; width: 100%; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; font-size: 14px; transition: 0.2s;
+        }
+        .save-btn:active { transform: scale(0.98); }
+
+        .history-section { width: 100%; margin-top: 50px; border-top: 1px solid #333; padding-top: 30px; }
+        .hist-item { 
+            background: #222; padding: 15px 25px; border-radius: 20px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--btn-active);
+        }
+        .hist-info b { display: block; font-size: 16px; }
+        .hist-info small { opacity: 0.5; text-transform: uppercase; font-size: 10px; }
+        .del-btn { color: #555; cursor: pointer; font-weight: 800; font-size: 20px; }
+        .load-btn { color: #4a9eff; cursor: pointer; font-weight: 600; font-size: 12px; margin-right: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CHECK LIST</h1>
+        <div class="sub-h1" id="mode-label">Creative Production Standards</div>
+
+        <div class="mode-selector">
+            <button id="btn-spine" class="mode-btn active" onclick="setMode('spine')">SPINE</button>
+            <button id="btn-casc" class="mode-btn" onclick="setMode('casc')">CASCADEUR</button>
+        </div>
+        
+        <input type="text" id="proj-name" placeholder="Название ролика / проекта...">
+
+        <div id="app"></div>
+
+        <div id="result-card">
+            <div class="score-row">
+                <div class="total-score" id="score">0.0</div>
+                <div class="grade-name" id="grade">ГАВНИЩЕ</div>
+            </div>
+            <button class="save-btn" onclick="saveToHistory()">Сохранить в историю</button>
+        </div>
+
+        <div class="history-section" id="history-list"></div>
+    </div>
+
+    <script>
+        // Текст полностью перенесен из твоих файлов без сокращений
+        const spineQ = [
+            { t: "1. Хук – Визуал", w: 1, q: ["Резкий цветовой/композиционный контраст в первые 0.5 сек?", "Хочется пересмотреть/паузить, чтобы понять технику или насладиться?", "Картинка выглядит дороже/необычнее среднего ролика в ленте?"]},
+            { t: "2. Хук – Триггер", w: 1, q: ["Вызывает моментальную эмоцию (смех/шок/узнавание) и лайк?", "Захочется переслать другу со словами «жиза»?", "Есть ли ценность, ради которой стоит «сохранить»?"]},
+            { t: "3. Хук – Музыка", w: 1, q: ["Действия синхронны с ритмом, дополняют вайб и усиливают картинку?", "Использован трендовый звук?", "Использованы SFX?"]},
+            { t: "4. Хук – Интрига", w: 1, q: ["Есть вопрос в тексте/визуале, ответ на который только в конце?", "Заставил ли ты зрителя почувствовать «недосказанность»?", "Есть желание досмотреть видео до последней секунды?"]},
+            { t: "5. Основа – Динамика", w: 1, q: ["Смена «Eye Candy» на середине ролика, нет пустых кадров?", "Удерживается высокий темп монтажа всё время?", "Используются Speed up и Slow-mo для сочности ролика или шейпов?"]},
+            { t: "7. Основа – Техничка", w: 0.5, q: ["Находятся ли текст и важные элементы внутри Safe Zone?", "Одобренный цвето-текст дизайнером?", "Звук чистый, без перегрузов и шумов?"]},
+            { t: "8. Основа – Без звука", w: 1, q: ["Понятен основной сюжет/посыл видео вообще без включения звука?", "Достаточно ли в видео визуальных подсказок или субтитров?", "Работает ли визуал как самостоятельный нарратив?"]},
+            { t: "9. Последыш – CTA", w: 0.5, q: ["Есть ли в конце четкий байт на действие (подпишись/коммент)?", "Выглядит ли превью ролика кликабельно и интригующе?", "Оставляет ли финал чувство завершенности или желание увидеть ч.2?"]}
+        ];
+
+        const cascQ = [
+            { t: "1. Хук – Визуал (Польза/Фича)", w: 1, q: ["Понятна ли главная фича ролика в первые 3 сек?", "Есть ли наглядный контраст «До / После» или работа инструментов (траектории)?", "Интерфейс и персонаж выглядят чисто, без лишнего визуального мусора?"]},
+            { t: "2. Хук – Триггер (Желание)", w: 1, q: ["Решает ли видео конкретную «боль» (фикс ног, баланс, мокап)?", "Захочется ли сохранить ролик как мини-гайд или референс?", "Вызывает ли результат мысль: «Я могу сделать так же быстро»?"]},
+            { t: "3. Хук – Понятность (Без звука)", w: 1, q: ["Суть фичи понятна полностью БЕЗ включения звука?", "Озвучка (если есть) лишь дополняет визуал, а не является единственным источником инфы?"]},
+            { t: "4. Хук – Интрига (Результат)", w: 1, q: ["Есть ли в начале заголовок/вопрос, на который ролик дает ответ?", "Понятно ли сразу, какой профит получит зритель в конце?", "Создано ли ощущение «магии» (сложное действие за пару кликов)?"]},
+            { t: "5. Основа – Динамика (Наглядность)", w: 1, q: ["Ролик сосредоточен на 1–3 фичах без распыления внимания?", "Нет затянутых моментов в записи экрана (склейки на рутине)?", "Есть акцент на «вкусных» деталях физики (вес, инерция)?"]},
+            { t: "6. Основа – Понятность контента", w: 1, q: ["Читаются ли действия в программе (курсор, кнопки, позы)?", "Видна ли разница в качестве анимации благодаря Cascadeur?", "Успевает ли зритель осознать, что именно произошло в софте?"]},
+            { t: "7. Основа – Техничка", w: 0.5, q: ["Текст и элементы UI не перекрыты интерфейсом соцсетей?", "Качество записи высокое (текст кнопок читается)?"]},
+            { t: "8. Основа – Инфографика", w: 1, q: ["Использованы стрелки/выделения для направления взгляда?", "Можно ли обучиться этому «мини-тутору» просто глядя на экран?"]},
+            { t: "9. Последыш – CTA (Призыв)", w: 0.5, q: ["Есть четкий призыв (Скачать / Попробовать / Стрим)?", "Есть ссылка или указание, где найти инструмент?", "Финал вызывает желание открыть Cascadeur прямо сейчас?"]}
+        ];
+
+        let currentMode = 'spine';
+        let state = [];
+
+        function setMode(mode, savedState = null) {
+            currentMode = mode;
+            document.getElementById('btn-spine').classList.toggle('active', mode === 'spine');
+            document.getElementById('btn-casc').classList.toggle('active', mode === 'casc');
+            document.getElementById('mode-label').innerText = mode === 'spine' ? "Spine Video Standards" : "Software Promotion Standards";
+            
+            const data = mode === 'spine' ? spineQ : cascQ;
+            state = savedState ? JSON.parse(JSON.stringify(savedState)) : data.map(cat => cat.q.map(() => false));
+            render();
+        }
+
+        function render() {
+            const data = currentMode === 'spine' ? spineQ : cascQ;
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            data.forEach((cat, cIdx) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                let qHtml = cat.q.map((q, qIdx) => `
+                    <div class="check-item ${state[cIdx][qIdx] ? 'active' : ''}" onclick="toggleCheck(${cIdx}, ${qIdx}, this)">
+                        <div class="checkbox"></div>
+                        <span>${q}</span>
+                    </div>
+                `).join('');
+                card.innerHTML = `<h2>${cat.t} ${cat.w === 0.5 ? '<small style="font-size:12px;opacity:0.5;">(0.5б)</small>' : ''}</h2>${qHtml}`;
+                app.appendChild(card);
+            });
+            updateScore();
+        }
+
+        function toggleCheck(cIdx, qIdx, el) {
+            state[cIdx][qIdx] = !state[cIdx][qIdx];
+            el.classList.toggle('active');
+            updateScore();
+        }
+
+        function updateScore() {
+            const data = currentMode === 'spine' ? spineQ : cascQ;
+            let total = 0;
+            state.forEach((cat, cIdx) => {
+                cat.forEach(q => { if(q) total += data[cIdx].w; });
+            });
+            document.getElementById('score').innerText = total.toFixed(1);
+            let g = "ГАВНИЩЕ";
+            if(total >= 18.5) g = "МАГНУС ОПУС"; else if(total >= 14) g = "ГОДНОТА"; else if(total >= 9) g = "НОРМАС"; else if(total >= 5) g = "НУ ТАКОЕ";
+            document.getElementById('grade').innerText = g;
+        }
+
+        function saveToHistory() {
+            const name = document.getElementById('proj-name').value || "Без названия";
+            const score = document.getElementById('score').innerText;
+            const grade = document.getElementById('grade').innerText;
+            const date = new Date().toLocaleDateString('ru-RU');
+            const log = JSON.parse(localStorage.getItem('videoLog_final') || '[]');
+            log.push({id: Date.now(), name, score, grade, date, type: currentMode, fullState: state});
+            localStorage.setItem('videoLog_final', JSON.stringify(log));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const log = JSON.parse(localStorage.getItem('videoLog_final') || '[]');
+            const list = document.getElementById('history-list');
+            list.innerHTML = '<h2 style="font-size: 14px; opacity: 0.5; margin-bottom: 15px;">АРХИВ ПРОЕКТОВ</h2>';
+            log.slice().reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'hist-item';
+                div.innerHTML = `
+                    <div class="hist-info">
+                        <b>${item.name}</b>
+                        <small>${item.date} • ${item.type.toUpperCase()} • ${item.score} ПТС</small>
+                    </div>
+                    <div>
+                        <span class="load-btn" onclick="restoreProj(${item.id})">ОТКРЫТЬ</span>
+                        <span class="del-btn" onclick="removeProj(${item.id})">✕</span>
+                    </div>`;
+                list.appendChild(div);
+            });
+        }
+
+        function restoreProj(id) {
+            const log = JSON.parse(localStorage.getItem('videoLog_final') || '[]');
+            const item = log.find(p => p.id === id);
+            if(item) {
+                document.getElementById('proj-name').value = item.name;
+                setMode(item.type, item.fullState);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function removeProj(id) {
+            let log = JSON.parse(localStorage.getItem('videoLog_final') || '[]');
+            log = log.filter(p => p.id !== id);
+            localStorage.setItem('videoLog_final', JSON.stringify(log));
+            loadHistory();
+        }
+
+        setMode('spine');
+        loadHistory();
+    </script>
+</body>
+</html>
